@@ -29,6 +29,15 @@ jobs:
       - name: Download dependencies
         run: go mod download
 
+      - name: Verify go.sum is up to date
+        run: |
+          go mod tidy
+          git diff --exit-code go.sum go.mod
+          if [ -n "$(git status --porcelain go.sum)" ]; then
+            echo "go.sum is missing. Please run 'go mod tidy' and commit go.sum."
+            exit 1
+          fi
+
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
@@ -48,6 +57,15 @@ jobs:
 
       - name: Download dependencies
         run: go mod download
+
+      - name: Verify go.sum is up to date
+        run: |
+          go mod tidy
+          git diff --exit-code go.sum go.mod
+          if [ -n "$(git status --porcelain go.sum)" ]; then
+            echo "go.sum is missing. Please run 'go mod tidy' and commit go.sum."
+            exit 1
+          fi
 
       - name: Run tests
         run: go test -v -coverprofile=coverage.out ./...
